@@ -2,9 +2,10 @@
 
 namespace Benjacho\BelongsToManyField\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class ArrayRules implements Rule
+class ArrayRules implements ValidationRule
 {
     public $rules = [];
 
@@ -20,31 +21,19 @@ class ArrayRules implements Rule
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     *
-     * @return bool
+     * Run the validation rule.
      */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $input = [$attribute => json_decode($value, true)];
-        $this->rules = [$attribute => $this->rules];
-        $validator = \Validator::make($input, $this->rules, $this->messages($attribute));
-        $this->message = $validator->errors()->get($attribute);
+        $rules = [$attribute => $this->rules];
+        $validator = \Validator::make($input, $rules, $this->messages($attribute));
 
-        return $validator->passes();
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return $this->message;
+        if ($validator->fails()) {
+            foreach ($validator->errors()->get($attribute) as $message) {
+                $fail($message);
+            }
+        }
     }
 
     public function messages($attribute)

@@ -3,6 +3,7 @@
 namespace Benjacho\BelongsToManyField;
 
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ResourceRelationshipGuesser;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -160,7 +161,7 @@ class BelongsToManyField extends Field
 
     public function rules($rules)
     {
-        $rules = ($rules instanceof Rule || is_string($rules)) ? func_get_args() : $rules;
+        $rules = ($rules instanceof ValidationRule || is_string($rules)) ? func_get_args() : $rules;
         $this->rules = [new ArrayRules($rules)];
 
         return $this;
