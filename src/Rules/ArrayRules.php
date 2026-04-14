@@ -4,6 +4,7 @@ namespace Benjacho\BelongsToManyField\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Validator;
 
 class ArrayRules implements ValidationRule
 {
@@ -27,7 +28,7 @@ class ArrayRules implements ValidationRule
     {
         $input = [$attribute => json_decode($value, true)];
         $rules = [$attribute => $this->rules];
-        $validator = \Validator::make($input, $rules, $this->messages($attribute));
+        $validator = Validator::make($input, $rules, $this->messages($attribute));
 
         if ($validator->fails()) {
             foreach ($validator->errors()->get($attribute) as $message) {
